@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>❌ Supprimer ce rendez-vous ?</h2>
+
+<p>
+    Avec {{ rendezvous.utilisateur }} le {{ rendezvous.date }}
+    de {{ rendezvous.heure_debut }} à {{ rendezvous.heure_fin }} ({{ rendezvous.soin }})
+</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">🗑 Oui, supprimer</button>
+    <a href="{% url 'detail_salon' pk=rendezvous.salon.id %}">❌ Non, retour</a>
+</form>
+{% endblock %}

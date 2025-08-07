@@ -1,0 +1,69 @@
+{# GestionClient/gestion/templates/gestion/soin/soins.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Liste des Salons - {{ nom_entreprise }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Liste des salons</h1>
+
+    <div class="mb-3">
+        {# Boutons de création de salon et de soin général : visibles UNIQUEMENT pour les professionnels #}
+        {% if request.user.is_authenticated and request.user.is_professional %}
+        <a href="{% url 'ajouter_salon' %}" class="btn btn-success me-2">
+            <i class="fas fa-plus-circle"></i> Créer un salon
+        </a>
+        <a href="{% url 'soin_create_general' %}" class="btn btn-info">
+            <i class="fas fa-plus-circle"></i> Ajouter un soin général
+        </a>
+        {% endif %}
+    </div>
+
+    {% if salons %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for salon in salons %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">{{ salon.nom }}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text"><strong>Adresse :</strong> {{ salon.adresse }}</p>
+                    <p class="card-text"><strong>Téléphone :</strong> {{ salon.telephone }}</p>
+                    <p class="card-text"><strong>Email :</strong> {{ salon.email }}</p>
+                    {# Assurez-vous que .count est correct ou utilisez .all|length pour les relations ManyToMany #}
+                    <p class="card-text"><strong>Employés :</strong> {{ salon.employes.count }}</p>
+                </div>
+                <div class="card-footer d-flex justify-content-between align-items-center">
+                    {# Bouton "Voir les détails" du salon : Visible pour TOUS (pas de condition de rôle) #}
+                    <a href="{% url 'detail_salon' pk=salon.pk %}" class="btn btn-sm btn-info">
+                        <i class="fas fa-eye"></i> Voir salon
+                    </a>
+
+                    {# Bouton "Soins salon" (Gérer/Voir) : Visible pour TOUS, le texte et le style changent selon le rôle #}
+                    {# L'URL doit toujours pointer vers la vue qui affiche les SoinSalonDetail pour ce salon #}
+                    <a href="{% url 'soin_salon_detail_list' salon_pk=salon.pk %}" class="btn btn-sm btn-warning ms-1">
+                        <i class="fas fa-spa"></i>
+                        {% if request.user.is_professional %}Gérer les soins du salon{% else %}Soins du salon{% endif %}
+                    </a>
+
+                    {# Boutons "Modifier" et "Supprimer" le salon : visibles UNIQUEMENT pour les professionnels #}
+                    {% if request.user.is_authenticated and request.user.is_professional %}
+                    <a href="{% url 'modifier_salon' pk=salon.pk %}" class="btn btn-sm btn-primary ms-1">
+                        <i class="bi bi-pencil"></i> Modifier
+                    </a>
+                    <a href="{% url 'supprimer_salon' pk=salon.pk %}" class="btn btn-sm btn-danger ms-1">
+                        <i class="bi bi-trash"></i> Supprimer
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="alert alert-info">Aucun salon n'est encore enregistré.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{# gestion/templates/gestion/salon/jour_special/ajouter_periode_vacances.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Ajouter Période de Vacances (Vacances, stage, ou autre) - {{ salon.nom }}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="content-header">
+        <h1>Ajouter une Période de Vacances / Fermeture pour : {{ salon.nom }}</h1>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="mb-3">
+            {{ form.date_debut.label_tag }}
+            {{ form.date_debut }}
+            {{ form.date_debut.errors }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.date_fin.label_tag }}
+            {{ form.date_fin }}
+            {{ form.date_fin.errors }}
+            <small class="form-text text-muted">Laisser vide pour une fermeture d'un seul jour.</small>
+        </div>
+
+        <div class="form-check mb-3">
+            {{ form.est_ferme }}
+            <label class="form-check-label" for="{{ form.est_ferme.id_for_label }}">
+                {{ form.est_ferme.label }}
+            </label>
+            {{ form.est_ferme.errors }}
+            <small class="form-text text-muted">Cochez si le salon est entièrement fermé pendant cette période.</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary">💾 Enregistrer la Période</button>
+        <a href="{% url 'liste_jours_speciaux' pk=salon.id %}" class="btn btn-secondary ms-2">⬅ Annuler</a>
+    </form>
+</div>
+{% endblock %}

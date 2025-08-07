@@ -1,0 +1,41 @@
+{# gestion/templates/gestion/salon/plage_horaire/liste_plages_horaires.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Plages Horaires pour {{ salon.nom }} - {{ nom_entreprise }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Plages Horaires pour : {{ salon.nom }}</h1>
+
+    <a href="{% url 'ajouter_plage_horaire' pk=salon.id %}" class="btn btn-primary mb-3">
+        <i class="fas fa-plus-circle"></i> Ajouter une Plage Horaire
+    </a>
+
+    {# Section pour les Plages Horaires Régulières #}
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            Horaires Réguliers par Jour de la Semaine
+        </div>
+        <div class="card-body">
+            {% if plages_horaires %}
+                <ul class="list-group">
+                    {% for plage in plages_horaires %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>{{ plage.jour.nom }} :</strong> {{ plage.heure_debut|date:"H:i" }} - {{ plage.heure_fin|date:"H:i" }}
+                            <div>
+                                <a href="{% url 'modifier_plage_horaire' salon_pk=salon.id plage_pk=plage.id %}" class="btn btn-sm btn-primary">Modifier</a>
+                                <a href="{% url 'supprimer_plage_horaire' salon_pk=salon.id plage_pk=plage.id %}" class="btn btn-sm btn-danger ms-1">Supprimer</a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Aucune plage horaire régulière définie pour ce salon.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <a href="{% url 'detail_salon' pk=salon.id %}" class="btn btn-secondary mt-3">⬅ Retour au Détail du Salon</a>
+</div>
+{% endblock %}

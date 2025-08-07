@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmer la suppression - {{ nom_entreprise }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h1 class="card-title mb-0">Confirmer la suppression</h1>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Êtes-vous sûr de vouloir supprimer {{ type }} : <strong>{{ object }}</strong> ?
+                    </p>
+                    <p class="card-text text-danger">
+                        Cette action est irréversible.
+                    </p>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger me-2">Confirmer la suppression</button>
+                        <a href="{% url return_url %}" class="btn btn-secondary">Annuler</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

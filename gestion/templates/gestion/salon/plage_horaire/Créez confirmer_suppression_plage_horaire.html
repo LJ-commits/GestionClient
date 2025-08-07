@@ -1,0 +1,24 @@
+{# gestion/templates/gestion/salon/plage_horaire/confirmer_suppression_plage_horaire.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Confirmer Suppression Plage Horaire{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Confirmer la suppression</h1>
+
+    <div class="alert alert-warning" role="alert">
+        Êtes-vous sûr de vouloir supprimer la plage horaire suivante pour le salon <strong>{{ salon.nom }}</strong> ?
+        <br>
+        <strong>Jour:</strong> {{ objet.jour.nom }}<br>
+        <strong>Heures:</strong> {{ objet.heure_debut|date:"H:i" }} - {{ objet.heure_fin|date:"H:i" }}
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">🗑️ Confirmer la suppression</button>
+        <a href="{% url 'liste_plages_horaires' pk=salon.id %}" class="btn btn-secondary ms-2">⬅ Annuler</a>
+    </form>
+</div>
+{% endblock %}

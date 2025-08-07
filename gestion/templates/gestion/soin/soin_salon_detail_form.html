@@ -1,0 +1,74 @@
+{# gestion/templates/gestion/soin/soin_salon_detail_form.html #}
+
+{% extends 'base.html' %} {# Assurez-vous que le chemin vers votre base.html est correct #}
+{% load static %} {# Si vous utilisez des fichiers statiques #}
+
+{% block extra_head %}
+    {# Ajoutez ici des liens CSS ou JS spécifiques si nécessaire #}
+{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="content-header">
+        <h1>{{ title }}</h1>
+    </div>
+
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+
+        {# Afficher les erreurs non-liées à un champ spécifique #}
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="p-4">
+            <div class="form-group mb-3">
+                <label for="{{ form.soin.id_for_label }}" class="form-label">{{ form.soin.label }}</label>
+                {{ form.soin }}
+                {% if form.soin.errors %}
+                    <div class="invalid-feedback d-block">{{ form.soin.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="{{ form.prix.id_for_label }}" class="form-label">{{ form.prix.label }}</label>
+                {{ form.prix }}
+                {% if form.prix.errors %}
+                    <div class="invalid-feedback d-block">{{ form.prix.errors }}</div>
+                {% endif %}
+            </div>
+
+            {# NOUVEAU : Champ pour la durée en minutes #}
+            <div class="form-group mb-3">
+                <label for="{{ form.duree_minutes.id_for_label }}" class="form-label">{{ form.duree_minutes.label }}</label>
+                {{ form.duree_minutes }}
+                {% if form.duree_minutes.errors %}
+                    <div class="invalid-feedback d-block">{{ form.duree_minutes.errors }}</div>
+                {% endif %}
+            </div>
+            {# FIN NOUVEAU CHAMP #}
+
+            <div class="form-group mb-3">
+                <label for="{{ form.commentaire_specifique.id_for_label }}" class="form-label">{{ form.commentaire_specifique.label }}</label>
+                {{ form.commentaire_specifique }}
+                {% if form.commentaire_specifique.errors %}
+                    <div class="invalid-feedback d-block">{{ form.commentaire_specifique.errors }}</div>
+                {% endif %}
+            </div>
+
+            {# Le champ 'salon' est probablement un HiddenInput, il doit être rendu pour que sa valeur soit envoyée #}
+            {# Il n'a pas besoin de label ou d'être visible pour l'utilisateur si c'est caché #}
+            {{ form.salon }}
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                <a href="{% url 'soin_salon_detail_list' salon.pk %}" class="btn btn-secondary">Annuler</a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

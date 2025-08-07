@@ -1,0 +1,42 @@
+{# gestion/templates/gestion/rendezvous/salon/ajouter_rendezvous.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Ajouter un Rendez-vous - {{ salon.nom }} - {{ nom_entreprise }}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="content-header">
+        <h1>Ajouter un Rendez-vous pour {{ salon.nom }}</h1>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {# Messages d'erreur globaux du formulaire #}
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% for field in form %}
+            <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <div class="form-text text-muted">{{ field.help_text }}</div>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-success mt-3">Ajouter le Rendez-vous</button>
+        <a href="{% url 'detail_salon' pk=salon.id %}" class="btn btn-secondary mt-3 ms-2">Annuler</a>
+    </form>
+</div>
+{% endblock %}

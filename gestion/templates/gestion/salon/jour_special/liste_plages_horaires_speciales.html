@@ -1,0 +1,47 @@
+{# gestion/templates/gestion/salon/jour_special/liste_plages_horaires_speciales.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Plages Horaires Spéciales pour {{ jour_special.date|date:"d/m/Y" }} - {{ nom_entreprise }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Plages Horaires Spéciales pour : {{ salon.nom }}<br>
+    <small class="text-muted">Jour Spécial : {{ jour_special.date|date:"d/m/Y" }}</small></h1>
+
+    {% if jour_special.est_ferme %}
+        <div class="alert alert-info" role="alert">
+            Ce jour est marqué comme **entièrement fermé**. Aucune plage horaire ne sera prise en compte.
+        </div>
+    {% endif %}
+
+    <a href="{% url 'ajouter_plage_horaire_speciale' salon_pk=salon.id jour_special_pk=jour_special.id %}" class="btn btn-primary mb-3">
+        <i class="fas fa-plus-circle"></i> Ajouter une Plage Horaire Spéciale
+    </a>
+
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            Plages Horaires Spéciales pour le {{ jour_special.date|date:"d/m/Y" }}
+        </div>
+        <div class="card-body">
+            {% if plages_speciales %}
+                <ul class="list-group">
+                    {% for plage in plages_speciales %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ plage.heure_debut|date:"H:i" }} - {{ plage.heure_fin|date:"H:i" }}
+                            <div>
+                                <a href="{% url 'modifier_plage_horaire_speciale' salon_pk=salon.id jour_special_pk=jour_special.id plage_speciale_pk=plage.id %}" class="btn btn-sm btn-primary">Modifier</a>
+                                <a href="{% url 'supprimer_plage_horaire_speciale' salon_pk=salon.id jour_special_pk=jour_special.id plage_speciale_pk=plage.id %}" class="btn btn-sm btn-danger ms-1">Supprimer</a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Aucune plage horaire spéciale définie pour ce jour. Si le salon n'est pas "entièrement fermé", cela signifie qu'il est fermé ce jour-là.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <a href="{% url 'liste_jours_speciaux' pk=salon.id %}" class="btn btn-secondary mt-3">⬅ Retour aux Jours Spéciaux</a>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{# gestion/templates/gestion/salon/plage_horaire/confirmer_suppression_plage_horaire.html #}
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+{# Ajoutez la classe 'content-wrapper' ici, à côté de 'container mt-4' #}
+<div class="container mt-4 content-wrapper">
+    <h2>❌ Supprimer cette plage horaire ?</h2>
+
+    <p>
+        Vous êtes sur le point de supprimer la plage horaire suivante pour le salon <strong>{{ plage.salon.nom }}</strong> :<br>
+        <strong>Jour :</strong> {{ plage.jour.nom }}<br>
+        <strong>De :</strong> {{ plage.heure_debut|time:"H:i" }}<br>
+        <strong>À :</strong> {{ plage.heure_fin|time:"H:i" }}
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">🗑 Oui, supprimer</button>
+        <a href="{% url 'liste_plages_horaires' pk=plage.salon.id %}" class="btn btn-secondary ms-2">❌ Non, retour</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1 class="mb-4 text-center">{{ title }}</h1>
+
+        {% if salons %}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for salon in salons %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title text-primary">{{ salon.nom }}</h5>
+                                <p class="card-text text-muted mb-2"><i class="fas fa-map-marker-alt"></i> {{ salon.adresse }}</p>
+                                <p class="card-text text-muted mb-2"><i class="fas fa-phone"></i> {{ salon.telephone }}</p>
+                                <p class="card-text text-muted mb-2"><i class="fas fa-envelope"></i> {{ salon.email }}</p>
+
+                                <h6>Soins disponibles :</h6>
+                                <ul class="list-unstyled">
+                                    {% if salon.soinsalondetail_set.all %}
+                                        {% for soin_detail in salon.soinsalondetail_set.all|slice:":3" %}
+                                            <li>- {{ soin_detail.soin.type_de_soin }} ({{ soin_detail.prix }}€)</li>
+                                        {% endfor %}
+                                        {% if salon.soinsalondetail_set.count > 3 %}
+                                            <li>... et {{ salon.soinsalondetail_set.count|add:"-3" }} autres soins.</li>
+                                        {% endif %}
+                                    {% else %}
+                                        <li>Aucun soin listé pour ce salon.</li>
+                                    {% endif %}
+                                </ul>
+
+                                <div class="mt-auto text-center">
+                                    <a href="{% url 'prendre_rendezvous_personnel' salon.id %}" class="btn btn-primary btn-sm mt-3">
+                                        Prendre rendez-vous ici <i class="fas fa-calendar-alt"></i>
+                                    </a>
+                                    <a href="{% url 'detail_salon' salon.id %}" class="btn btn-outline-info btn-sm mt-3 ms-2">
+                                        Voir détails du salon <i class="fas fa-info-circle"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center" role="alert">
+                Aucun salon disponible pour le moment.
+            </div>
+        {% endif %}
+
+        <div class="text-center mt-4">
+            <a href="{% url 'mes_rendezvous' %}" class="btn btn-secondary btn-lg">Annuler</a>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="https://kit.fontawesome.com/votre_code_font_awesome.js" crossorigin="anonymous"></script> {# N'oubliez pas votre code Font Awesome ici #}
+{% endblock %}

@@ -1,0 +1,203 @@
+{# gestion/templates/gestion/salon/detail_salon.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Détails du Salon : {{ salon.nom }} - {{ nom_entreprise }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Détails du Salon : {{ salon.nom }}</h1>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            Informations Générales
+        </div>
+        <div class="card-body">
+            <p><strong>Nom :</strong> {{ salon.nom }}</p>
+            <p><strong>Nombre d'Employés :</strong> {{ salon.nombre_employes }}</p>
+            {% if salon.adresse %}
+                <p><strong>Adresse :</strong> {{ salon.adresse }}</p>
+            {% endif %}
+            {% if salon.telephone %}
+                <p><strong>Téléphone :</strong> {{ salon.telephone }}</p>
+            {% endif %}
+            {% if salon.email %}
+                <p><strong>Email :</strong> {{ salon.email }}</p>
+            {% endif %}
+
+            {% if salon.date_debut_periode or salon.date_fin_periode %}
+                <hr>
+                <h6 class="mt-4">Période d'activité :</h6>
+                {% if salon.date_debut_periode %}
+                    <p><strong>Début :</strong> {{ salon.date_debut_periode|date:"d/m/Y" }}</p>
+                {% else %}
+                    <p><strong>Début :</strong> Non spécifié</p>
+                {% endif %}
+
+                {% if salon.date_fin_periode %}
+                    <p><strong>Fin :</strong> {{ salon.date_fin_periode|date:"d/m/Y" }}</p>
+                {% else %}
+                    <p><strong>Fin :</strong> Non spécifié</p>
+                {% endif %}
+            {% endif %}
+
+            <h6 class="mt-4">Jours et Heures d'Ouverture Réguliers :</h6>
+            <ul class="list-group list-group-flush">
+                {% for jour_nom, plages in horaires_par_jour.items %}
+                    <li class="list-group-item">
+                        <strong>{{ jour_nom }} :</strong>
+                        {% if plages %}
+                            {% for plage in plages %}
+                                {{ plage.heure_debut|time:"H:i" }} - {{ plage.heure_fin|time:"H:i" }}
+                                {% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            Fermé
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+
+            {% if request.user.is_professional %}
+                <a href="{% url 'modifier_salon' pk=salon.id %}" class="btn btn-warning mt-3">
+                    <i class="bi bi-pencil"></i> Modifier le Salon
+                </a>
+                <a href="{% url 'supprimer_salon' pk=salon.id %}" class="btn btn-danger mt-3 ms-2">
+                    <i class="bi bi-trash"></i> Supprimer le Salon
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    {# SECTION MISE À JOUR : Horaires Spéciaux et Jours de Fermeture groupés #}
+    {% if grouped_jours_speciaux %}
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                Horaires Spéciaux et Jours de Fermeture Exceptionnelle
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for item in grouped_jours_speciaux %}
+                        <li class="list-group-item">
+                            <strong>
+                                {# --- DÉBUT MODIFICATION --- #}
+                                {% if item.type == 'period_ferme' %}
+                                    {# Vérifie si la période est d'un seul jour #}
+                                    {% if item.date_debut == item.date_fin %}
+                                        Le {{ item.date_debut|date:"l d/m/Y" }} :
+                                    {% else %}
+                                        Du {{ item.date_debut|date:"l d/m/Y" }} au {{ item.date_fin|date:"l d/m/Y" }} :
+                                    {% endif %}
+                                {% else %}
+                                    Le {{ item.jour_special.date|date:"l d/m/Y" }} :
+                                {% endif %}
+                                {# --- FIN MODIFICATION --- #}
+                            </strong>
+
+                            {% if item.est_ferme %}
+                                <span class="badge bg-danger ms-2">Fermé</span>
+                            {% else %}
+                                <span class="badge bg-success ms-2">Ouvert Exceptionnellement</span>
+                                {% if item.plages_speciales %}
+                                    <br/> Heures d'ouverture :
+                                    {% for plage_speciale in item.plages_specifiques.all %}
+                                        {{ plage_speciale.heure_debut|time:"H:i" }} - {{ plage_speciale.heure_fin|time:"H:i" }}
+                                        {% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <br/> Aucune plage horaire définie pour cette ouverture exceptionnelle.
+                                {% endif %}
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if request.user.is_professional %}
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                Gestion Détaillée des Plages Horaires et Jours Spéciaux
+            </div>
+            <div class="card-body">
+                <p>
+                    Pour modifier les horaires d'ouverture ci-dessus (avec pauses) et gérer les jours spéciaux (fermetures exceptionnelles, horaires différents),
+                    vous devrez utiliser les outils de gestion détaillés.
+                </p>
+                <a href="{% url 'liste_plages_horaires' pk=salon.id %}" class="btn btn-info">Gérer les Plages Horaires Régulières</a>
+                <a href="{% url 'liste_jours_speciaux' pk=salon.id %}" class="btn btn-info ms-2">Gérer les Jours Spéciaux et Horaires Exceptionnels</a>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if request.user.is_professional or request.user.role == 'eleve' %}
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                Rendez-vous Futurs
+                <div>
+                    <a href="{% url 'ajouter_rendezvous' salon_id=salon.id %}" class="btn btn-success btn-sm">
+                        <i class="bi bi-plus-circle"></i> Ajouter un Rendez-vous
+                    </a>
+                    <a href="{% url 'anciens_rendezvous' pk=salon.id %}" class="btn btn-secondary btn-sm ms-2">
+                        <i class="bi bi-clock-history"></i> Voir les anciens Rendez-vous
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if rendezvous_par_mois %}
+                    <div class="accordion" id="rendezvousAccordion">
+                        {% for mois, rendez_vous_list in rendezvous_par_mois.items %}
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                                        {{ mois }} ({{ rendez_vous_list|length }} rendez-vous)
+                                    </button>
+                                </h2>
+                                <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#rendezvousAccordion">
+                                    <div class="accordion-body p-0">
+                                        <ul class="list-group list-group-flush">
+                                            {% for rd in rendez_vous_list %}
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        Rendez-vous de <strong>{{ rd.utilisateur.first_name }} {{ rd.utilisateur.last_name }}</strong>
+                                                         pour {{ rd.soin_detail.soin.type_de_soin }} le {{ rd.date|date:"d/m/Y" }} de
+                                                        {{ rd.heure_debut|time:"H:i" }} à {{ rd.heure_fin|time:"H:i" }}
+                                                    </div>
+                                                    <div>
+                                                        {% if request.user.is_professional %}
+                                                            <a href="{% url 'modifier_rendezvous' rendezvous_id=rd.id %}" class="btn btn-sm btn-primary ms-2">Modifier</a>
+                                                            <a href="{% url 'supprimer_rendezvous' rendezvous_id=rd.id %}" class="btn btn-sm btn-danger ms-1">Supprimer</a>
+                                                        {% endif %}
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>Aucun rendez-vous futur pour ce salon.</p>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if referer %}
+    <a href="{{ referer }}" class="btn btn-secondary">
+        ⬅ Retour
+    </a>
+    {% else %}
+    <a href="{% url 'liste_salons' %}" class="btn btn-secondary">
+        ⬅ Retour à la liste des salons
+    </a>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="https://kit.fontawesome.com/votre_code_font_awesome.js" crossorigin="anonymous"></script>
+{% endblock %}

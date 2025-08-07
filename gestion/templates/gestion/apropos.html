@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}  {# <== Obligatoire pour utiliser {% static %} #}
+
+{% block title %}À propos - {{ nom_entreprise }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">À propos de {{ nom_entreprise }}</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <p>{{ description|safe }}</p>
+        </div>
+        <div class="col-md-6">
+            <img src="{% static photo %}" class="img-fluid rounded shadow" alt="Photo de l'entreprise">
+        </div>
+    </div>
+</div>
+{% endblock %}

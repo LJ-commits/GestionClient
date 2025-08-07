@@ -1,0 +1,37 @@
+{# gestion/templates/gestion/salon/plage_horaire/ajouter_plage_horaire.html #}
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content-card">
+    <div class="content-header">
+        <h1>Ajouter une Plage Horaire pour : {{ salon.nom }}</h1>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="mb-3">
+            {{ form.jour.label_tag }}
+            {{ form.jour }}
+            {{ form.jour.errors }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.heure_debut.label_tag }}
+            {{ form.heure_debut }}
+            {{ form.heure_debut.errors }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.heure_fin.label_tag }}
+            {{ form.heure_fin }}
+            {{ form.heure_fin.errors }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">💾 Enregistrer la plage horaire</button>
+        <a href="{% url 'liste_plages_horaires' pk=salon.id %}" class="btn btn-secondary ms-2">⬅ Annuler</a>
+    </form>
+</div>
+{% endblock %}

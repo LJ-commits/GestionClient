@@ -1,0 +1,32 @@
+{# gestion/templates/gestion/salon/jour_special/modifier_plage_horaire_speciale.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Modifier Plage Spéciale - {{ salon.nom }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Modifier la Plage Horaire Spéciale pour : {{ salon.nom }}<br>
+    <small class="text-muted">Jour : {{ jour_special.date|date:"d/m/Y" }}</small></h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="mb-3">
+            {{ form.heure_debut.label_tag }}
+            {{ form.heure_debut }}
+            {{ form.heure_debut.errors }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.heure_fin.label_tag }}
+            {{ form.heure_fin }}
+            {{ form.heure_fin.errors }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">💾 Mettre à jour la plage spéciale</button>
+        <a href="{% url 'liste_plages_horaires_speciales' salon_pk=salon.id jour_special_pk=jour_special.id %}" class="btn btn-secondary ms-2">⬅ Annuler</a>
+    </form>
+</div>
+{% endblock %}

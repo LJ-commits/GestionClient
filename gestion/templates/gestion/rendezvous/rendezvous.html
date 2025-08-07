@@ -1,0 +1,94 @@
+{# gestion/templates/gestion/rendezvous/rendezvous.html #}
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1 class="mb-4 text-center">{{ title }}</h1>
+
+        {# Bouton pour ajouter un nouveau rendez-vous, visible pour les utilisateurs connectés #}
+        {% if request.user.is_authenticated %}
+            <div class="text-center mb-4">
+                <a href="{% url 'choisir_salon_pour_rendezvous' %}" class="btn btn-success btn-lg">
+                    <i class="bi bi-plus-circle-fill"></i> Ajouter un rendez-vous
+                </a>
+            </div>
+        {% endif %}
+
+        {% if rendezvous_list %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Date</th>
+                            <th>Heure Début</th>
+                            <th>Heure Fin</th>
+                            <th>Client</th>
+                            <th>Soin</th>
+                            <th>Salon</th>
+                            <th>Statut</th>
+                            {% if request.user.is_professional or is_my_appointments_view %}
+                                <th>Actions</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rv in rendezvous_list %}
+                            <tr>
+                                <td>{{ rv.date|date:"d/m/Y" }}</td>
+                                <td>{{ rv.heure_debut|time:"H:i" }}</td>
+                                <td>{{ rv.heure_fin|time:"H:i" }}</td>
+                                <td>{{ rv.utilisateur.get_full_name }}</td>
+                                <td>{{ rv.soin_detail.soin.type_de_soin }}</td>
+                                <td>{{ rv.salon.nom }}</td>
+                                <td>
+                                    <span class="badge
+                                        {% if rv.statut == 'prévu' %}bg-primary
+                                        {% elif rv.statut == 'confirmé' %}bg-success
+                                        {% elif rv.statut == 'annulé' %}bg-danger
+                                        {% elif rv.statut == 'terminé' %}bg-secondary
+                                        {% else %}bg-info{% endif %}">
+                                        {{ rv.get_statut_display }}
+                                    </span>
+                                </td>
+                                {% if request.user.is_professional %}
+                                    <td>
+                                        <a href="{% url 'modifier_rendezvous' rv.id %}" class="btn btn-warning btn-sm me-2" title="Modifier">
+                                            <i class="fas fa-edit"></i> Modifier
+                                        </a>
+                                        <a href="{% url 'supprimer_rendezvous' rv.id %}" class="btn btn-danger btn-sm" title="Supprimer">
+                                            <i class="fas fa-trash-alt"></i> Supprimer
+                                        </a>
+                                    </td>
+                                {% elif is_my_appointments_view and rv.utilisateur == request.user %}
+                                    <td>
+                                        <a href="{% url 'modifier_rendezvous' rv.id %}" class="btn btn-warning btn-sm me-2" title="Modifier">
+                                            <i class="fas fa-edit"></i> Modifier
+                                        </a>
+                                        <a href="{% url 'supprimer_rendezvous' rv.id %}" class="btn btn-danger btn-sm" title="Supprimer">
+                                            <i class="fas fa-trash-alt"></i> Supprimer
+                                        </a>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center" role="alert">
+                Aucun rendez-vous trouvé.
+            </div>
+            {# Le bouton "Prendre mon premier rendez-vous" est conservé uniquement pour le cas où la liste est vide #}
+            <div class="text-center mt-3">
+                <a href="{% url 'choisir_salon_pour_rendezvous' %}" class="btn btn-success btn-lg">Prendre mon premier rendez-vous</a>
+            </div>
+        {% endif %}
+
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="https://kit.fontawesome.com/votre_code_font_awesome.js" crossorigin="anonymous"></script>
+{% endblock %}

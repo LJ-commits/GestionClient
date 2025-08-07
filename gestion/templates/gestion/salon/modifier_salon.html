@@ -1,0 +1,67 @@
+{# gestion/templates/gestion/salon/modifier_salon.html #}
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content-card">
+    <div class="content-header">
+        <h1>Modifier le salon : {{ salon.nom }}</h1>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        {# Champ Nom #}
+        <div class="mb-3">
+            {{ form.nom.label_tag }}
+            {{ form.nom }}
+            {{ form.nom.errors }}
+        </div>
+
+        {# Champ Nombre d'employés #}
+        <div class="mb-3">
+            {{ form.nombre_employes.label_tag }}
+            {{ form.nombre_employes }}
+            {{ form.nombre_employes.errors }}
+        </div>
+
+        {# Champ Adresse #}
+        <div class="mb-3">
+            {{ form.adresse.label_tag }}
+            {{ form.adresse }}
+            {{ form.adresse.errors }}
+        </div>
+
+        {# Champ Téléphone #}
+        <div class="mb-3">
+            {{ form.telephone.label_tag }}
+            {{ form.telephone }}
+            {{ form.telephone.errors }}
+        </div>
+
+        {# Champ Email #}
+        <div class="mb-3">
+            {{ form.email.label_tag }}
+            {{ form.email }}
+            {{ form.email.errors }}
+        </div>
+
+        {# --- NOUVEAUX CHAMPS --- #}
+        <div class="mb-3">
+            {{ form.date_debut_periode.label_tag }}
+            {{ form.date_debut_periode }}
+            {{ form.date_debut_periode.errors }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.date_fin_periode.label_tag }}
+            {{ form.date_fin_periode }}
+            {{ form.date_fin_periode.errors }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">💾 Enregistrer les modifications</button>
+        <a href="{% url 'detail_salon' pk=salon.id %}" class="btn btn-secondary ms-2">⬅ Annuler et Retour</a>
+    </form>
+</div>
+{% endblock %}

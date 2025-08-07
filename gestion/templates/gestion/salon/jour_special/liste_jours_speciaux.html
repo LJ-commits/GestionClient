@@ -1,0 +1,156 @@
+{# gestion/templates/gestion/salon/jour_special/liste_jours_speciaux.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Jours Spéciaux pour : {{ salon.nom }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Jours Spéciaux pour : {{ salon.nom }}</h1>
+
+    <div class="mb-3">
+        <a href="{% url 'ajouter_jour_special' pk=salon.id %}" class="btn btn-primary">Ajouter un Jour Spécial</a>
+        <a href="{% url 'ajouter_periode_vacances' pk=salon.id %}" class="btn btn-info ms-2">Ajouter une Période de Vacances / Fermeture</a>
+    </div>
+
+    <h2 class="mb-3">Liste des Jours Spéciaux</h2>
+    {% if grouped_jours_speciaux %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Date(s)</th>
+                        <th>Statut / Horaires</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in grouped_jours_speciaux %}
+                        <tr>
+                            <td>
+                                {# --- DÉBUT MODIFICATION (ajout du jour de la semaine) --- #}
+                                {% if item.type == 'period_ferme' %}
+                                    {# Vérifie si la période est d'un seul jour #}
+                                    {% if item.date_debut == item.date_fin %}
+                                        Le {{ item.date_debut|date:"l d/m/Y" }}
+                                    {% else %}
+                                        Du {{ item.date_debut|date:"l d/m/Y" }} au {{ item.date_fin|date:"l d/m/Y" }}
+                                    {% endif %}
+                                {% else %}
+                                    {# Afficher le jour unique #}
+                                    Le {{ item.jour_special.date|date:"l d/m/Y" }}
+                                {% endif %}
+                                {# --- FIN MODIFICATION --- #}
+                            </td>
+                            <td>
+                                {% if item.est_ferme %}
+                                    <span class="badge bg-danger">Fermé</span>
+                                {% else %}
+                                    {% if item.plages_speciales %}
+                                        {% for plage in item.plages_speciales %}
+                                            <span class="badge bg-success">{{ plage.heure_debut|time:"H:i" }} - {{ plage.heure_fin|time:"H:i" }}</span>
+                                            {% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark">Ouvert (Horaires à définir)</span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.type == 'period_ferme' %}
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
+                                            data-ids="{{ item.ids|join:',' }}" data-type="period" data-salon-id="{{ salon.id }}">Supprimer Période</button>
+                                {% else %}
+                                    {% if not item.est_ferme %}
+                                        <a href="{% url 'liste_plages_horaires_speciales' salon_pk=salon.id jour_special_pk=item.jour_special.id %}" class="btn btn-secondary btn-sm me-2">Gérer Horaires</a>
+                                    {% endif %}
+                                    <a href="{% url 'modifier_jour_special' salon_pk=salon.id jour_special_pk=item.jour_special.id %}" class="btn btn-warning btn-sm me-2">Modifier</a>
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
+                                            data-id="{{ item.jour_special.id }}" data-type="single" data-date="{{ item.jour_special.date|date:'d/m/Y' }}">Supprimer</button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            Aucun jour spécial n'a été défini pour ce salon.
+        </div>
+    {% endif %}
+
+    <a href="{% url 'detail_salon' pk=salon.id %}" class="btn btn-secondary mt-3">⬅ Retour au Détail du Salon</a>
+</div>
+
+{# Le modal de confirmation et le script JavaScript pour gérer la suppression #}
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmer la suppression</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-dark"> </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <form id="deleteForm" method="post" style="display:inline;">
+                    </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const confirmDeleteModal = document.getElementById('confirmDeleteModal');
+        const modalForm = document.getElementById('deleteForm');
+
+        confirmDeleteModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const type = button.getAttribute('data-type');
+            const modalBody = confirmDeleteModal.querySelector('.modal-body');
+
+            // Réinitialisation du formulaire et ajout du CSRF Token
+            modalForm.innerHTML = `<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">`;
+
+            // Mise à jour du contenu du modal et de l'action du formulaire en fonction du type de suppression
+            if (type === 'period') {
+                const ids = button.getAttribute('data-ids');
+                modalBody.innerHTML = `Êtes-vous sûr de vouloir supprimer cette période de fermeture ? Tous les jours individuels qui la composent seront supprimés.`;
+
+                const idsInput = document.createElement('input');
+                idsInput.type = 'hidden';
+                idsInput.name = 'ids_to_delete';
+                idsInput.value = ids;
+                modalForm.appendChild(idsInput);
+
+                const submitButton = document.createElement('button');
+                submitButton.type = 'submit';
+            	submitButton.className = 'btn btn-danger';
+                submitButton.textContent = 'Supprimer la période';
+                modalForm.appendChild(submitButton);
+
+                modalForm.action = `{% url 'supprimer_periode_vacances' salon_pk=salon.id %}`;
+
+            } else if (type === 'single') {
+                const jourSpecialId = button.getAttribute('data-id');
+                const date = button.getAttribute('data-date');
+
+                modalBody.innerHTML = `Êtes-vous sûr de vouloir supprimer le jour spécial du <strong>${date}</strong> ?`;
+
+                const submitButton = document.createElement('button');
+                submitButton.type = 'submit';
+            	submitButton.className = 'btn btn-danger';
+                submitButton.textContent = 'Supprimer';
+                modalForm.appendChild(submitButton);
+
+                // L'action du formulaire pour un jour unique
+                modalForm.action = `/salons/{{ salon.id }}/jours-speciaux/${jourSpecialId}/supprimer/`;
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,75 @@
+{# gestion/templates/gestion/soin/soin_salon_detail_list.html #}
+
+{% extends 'base.html' %}
+{% load static %}
+{% load soin_filters %} {# NOUVEAU : Chargez votre fichier de filtres #}
+
+{% block extra_head %}
+    {# ... votre code existant pour le head ... #}
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h2 class="mb-4">{{ title }}</h2>
+
+        <div class="mb-3">
+            {# Le bouton "Ajouter un Soin Spécifique" visible uniquement pour les professionnels #}
+            {% if request.user.is_professional %}
+                <a href="{% url 'soin_salon_detail_create' salon.pk %}" class="btn btn-success">
+                    <i class="bi bi-plus-circle-fill"></i> Ajouter un Soin Spécifique pour {{ salon.nom }}
+                </a>
+            {% endif %}
+
+            {# CORRECTION ICI : Le bouton de retour doit pointer vers la page des salons publique 'soins' #}
+            <a href="{% url 'soins' %}" class="btn btn-info ms-2">
+                <i class="bi bi-arrow-left-circle-fill"></i> Retour à la liste des salons
+            </a>
+        </div>
+
+        {% if soins_details %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Type de Soin</th>
+                            <th>Prix</th>
+                            <th>Durée</th>
+                            <th>Commentaire</th>
+                            {# La colonne "Actions" visible uniquement pour les professionnels #}
+                            {% if request.user.is_professional %}
+                                <th>Actions</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for detail in soins_details %}
+                            <tr>
+                                <td>{{ detail.soin.type_de_soin }}</td>
+                                <td>{{ detail.prix }} €</td>
+                                <td>
+                                    {{ detail.duree|format_duration }}
+                                </td>
+                                <td>{{ detail.commentaire_specifique|default:"Aucun" }}</td>
+                                {# Les boutons "Modifier" et "Supprimer" visibles uniquement pour les professionnels #}
+                                {% if request.user.is_professional %}
+                                    <td>
+                                        <a href="{% url 'soin_salon_detail_update' detail.pk %}" class="btn btn-warning btn-sm me-2" title="Modifier">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a href="{% url 'soin_salon_detail_delete' detail.pk %}" class="btn btn-danger btn-sm" title="Supprimer">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </a>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info" role="alert">
+                Aucun soin spécifique n'a été ajouté pour le salon {{ salon.nom }} pour le moment.
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

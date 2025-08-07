@@ -1,0 +1,33 @@
+{# gestion/templates/gestion/salon/jour_special/modifier_jour_special.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Modifier Jour Spécial - {{ salon.nom }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Modifier le Jour Spécial du {{ jour_special.date|date:"d/m/Y" }} pour : {{ salon.nom }}</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="mb-3">
+            {{ form.date.label_tag }}
+            {{ form.date }}
+            {{ form.date.errors }}
+        </div>
+
+        <div class="form-check mb-3">
+            {{ form.est_ferme.tag }}
+            <label class="form-check-label" for="{{ form.est_ferme.id_for_label }}">
+                {{ form.est_ferme.label }}
+            </label>
+            {{ form.est_ferme.errors }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">💾 Mettre à jour le Jour Spécial</button>
+        <a href="{% url 'liste_jours_speciaux' pk=salon.id %}" class="btn btn-secondary ms-2">⬅ Annuler</a>
+    </form>
+</div>
+{% endblock %}

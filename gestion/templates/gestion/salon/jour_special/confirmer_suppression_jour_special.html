@@ -1,0 +1,30 @@
+{# gestion/templates/gestion/salon/jour_special/confirmer_suppression_jour_special.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Confirmer Suppression Jour Spécial{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Confirmer la suppression</h1>
+
+    <div class="alert alert-warning" role="alert">
+        Êtes-vous sûr de vouloir supprimer le jour spécial suivant pour le salon <strong>{{ salon.nom }}</strong> ?
+        <br>
+        <strong>Date :</strong> {{ objet.date|date:"d/m/Y" }}
+        {% if objet.est_ferme %}
+            <br><strong>Statut :</strong> Jour de fermeture
+        {% else %}
+            <br><strong>Statut :</strong> Jour avec horaires spéciaux
+        {% endif %}
+        <br>
+        Toutes les plages horaires spéciales associées à ce jour seront également supprimées.
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">🗑️ Confirmer la suppression</button>
+        <a href="{% url 'liste_jours_speciaux' pk=salon.id %}" class="btn btn-secondary ms-2">⬅ Annuler</a>
+    </form>
+</div>
+{% endblock %}

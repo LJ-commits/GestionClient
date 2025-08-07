@@ -1,0 +1,42 @@
+{% extends 'base.html' %} {# Assurez-vous que votre base.html est bien étendu #}
+
+{% block title %}Connexion - {{ nom_entreprise }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="card-title mb-0">Connexion</h1>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" novalidate>
+                        {% csrf_token %} {# C'EST LE PLUS IMPORTANT POUR LE CSRF ! #}
+
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label">Adresse e-mail :</label> {# LABEL CORRECT ICI #}
+                            <input type="email" class="form-control" id="id_email" name="email" value="{{ email_saisi }}" required autofocus>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_mot_de_passe" class="form-label">Mot de passe :</label> {# LABEL CORRECT ICI #}
+                            <input type="password" class="form-control" id="id_mot_de_passe" name="mot_de_passe" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Se connecter</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

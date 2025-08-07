@@ -1,0 +1,19 @@
+{# gestion/salon/modifier_rendezvous.html #}
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content-card">
+    <div class="content-header">
+        <h1>✏️ Modifier le rendez-vous</h1>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
+    </form>
+
+    <p><a href="{% url 'detail_salon' salon.id %}" class="btn btn-secondary mt-3">⬅ Retour au salon</a></p>
+</div>
+{% endblock %}

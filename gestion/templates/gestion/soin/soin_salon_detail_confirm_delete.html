@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - {{ nom_entreprise }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">{{ title }}</h1>
+
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Confirmation de suppression</h4>
+        <p>Êtes-vous sûr de vouloir supprimer le soin spécifique suivant ?</p>
+        <hr>
+        <p class="mb-0">
+            <strong>Type de Soin :</strong> {{ soin_detail.soin.type_de_soin }}<br>
+            <strong>Salon :</strong> {{ salon.nom }}<br>
+            <strong>Prix :</strong> {{ soin_detail.prix|floatformat:"2" }} €<br>
+            <strong>Commentaire :</strong> {{ soin_detail.commentaire_specifique|default:"Aucun" }}
+        </p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash"></i> Confirmer la suppression
+        </button>
+        <a href="{% url 'soin_salon_detail_list' salon_pk=salon.pk %}" class="btn btn-secondary ms-2">
+            <i class="fas fa-arrow-left"></i> Annuler
+        </a>
+    </form>
+</div>
+{% endblock %}

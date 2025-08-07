@@ -1,0 +1,128 @@
+{# gestion/templates/gestion/utilisateur/utilisateurs.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Liste des utilisateurs - {{ nom_entreprise }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Liste des utilisateurs</h1>
+
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            {# Le bouton "Ajouter un utilisateur" ne devrait apparaître que pour les professionnels #}
+            {# --- DÉBUT MODIFICATION : Utilisation de request.user.is_professional --- #}
+            {% if request.user.is_professional or request.user.role == 'eleve' %}
+                <a href="{% url 'utilisateur_create' %}" class="btn btn-success">
+                    <i class="fas fa-user-plus"></i> Ajouter un utilisateur
+                </a>
+            {% endif %}
+            {# --- FIN MODIFICATION --- #}
+
+            {# BOUTON DE FILTRAGE ACTIF/INACTIF (inchangé) #}
+            {% if show_inactive %}
+                <a href="{% url 'utilisateur_list' %}" class="btn btn-info ms-2">
+                    <i class="bi bi-person-check-fill"></i> Voir les utilisateurs actifs
+                </a>
+            {% else %}
+                <a href="{% url 'utilisateur_list' %}?inactive=true" class="btn btn-warning ms-2">
+                    <i class="bi bi-person-x-fill"></i> Voir les utilisateurs inactifs
+                </a>
+            {% endif %}
+        </div>
+        {# ... (autres éléments si tu en as, par exemple la barre de recherche) ... #}
+    </div>
+
+    {# Ton tableau actuel pour afficher les utilisateurs #}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>N°</th>
+                    <th>Nom de famille</th>
+                    <th>Prénom</th>
+                    <th>Email</th>
+                    <th>Nom d'utilisateur</th>
+                    <th>Téléphone</th>
+                    <th>Rôle</th> {# <-- MODIFIÉ : Le rôle sera affiché correctement maintenant #}
+                    <th>Date de naissance</th>
+                    <th>Est Actif</th>
+                    {# --- DÉBUT MODIFICATION : Colonne "Actions" visible uniquement pour les professionnels --- #}
+                    {% if request.user.is_professional %}
+                        <th>Actions</th>
+                    {% endif %}
+                    {# --- FIN MODIFICATION --- #}
+                </tr>
+            </thead>
+            <tbody>
+                {% for utilisateur in utilisateurs %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ utilisateur.last_name }}</td>
+                    <td>{{ utilisateur.first_name }}</td>
+                    <td>{{ utilisateur.email }}</td>
+                    <td>{{ utilisateur.username }}</td>
+                    <td>{{ utilisateur.telephone|default:"/" }}</td>
+                    <td>
+                        {# --- DÉBUT MODIFICATION : Affichage du rôle via get_role_display --- #}
+                        {{ utilisateur.get_role_display }}
+                        {# --- FIN MODIFICATION --- #}
+                    </td>
+                    <td>{{ utilisateur.date_de_naissance|date:"d/m/Y" }}</td>
+                    <td>
+                        {% if utilisateur.is_active %}
+                            <i class="bi bi-check-circle-fill text-success"></i> Oui
+                        {% else %}
+                            <i class="bi bi-x-circle-fill text-danger"></i> Non
+                        {% endif %}
+                    </td>
+                    {# --- DÉBUT MODIFICATION : Cellule "Actions" visible uniquement pour les professionnels --- #}
+                    {% if request.user.is_professional %}
+                        <td>
+                            {# Utilisation de btn-group pour aligner les boutons #}
+                            <div class="btn-group" role="group" aria-label="Actions utilisateur">
+                                {# Bouton Modifier - Ajout de 'me-1' pour espacer les boutons #}
+                                <a href="{% url 'utilisateur_update' pk=utilisateur.pk %}" class="btn btn-sm btn-primary me-1" title="Modifier l'utilisateur">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+
+                                {# Bouton ACTIVER/DÉSACTIVER - Ajout de 'me-1' #}
+                                {% if utilisateur.is_active %}
+                                    <a href="{% url 'utilisateur_toggle_active' pk=utilisateur.pk %}" class="btn btn-sm btn-secondary me-1" title="Désactiver l'utilisateur">
+                                        <i class="bi bi-person-x-fill"></i>
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'utilisateur_toggle_active' pk=utilisateur.pk %}" class="btn btn-sm btn-success me-1" title="Activer l'utilisateur">
+                                        <i class="bi bi-person-check-fill"></i>
+                                    </a>
+                                {% endif %}
+
+                                {# Bouton Supprimer - Pas de 'me-1' car c'est le dernier #}
+                                <a href="{% url 'utilisateur_delete' pk=utilisateur.pk %}" class="btn btn-sm btn-danger" title="Supprimer l'utilisateur">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                                {# --- NOUVEAU : Bouton Réinitialiser Mot de passe --- #}
+                                <a href="{% url 'utilisateur_set_password' pk=utilisateur.pk %}" class="btn btn-sm btn-warning ms-1" title="Réinitialiser le mot de passe">
+                                    <i class="bi bi-key-fill"></i>
+                                </a>
+                                {# --- FIN NOUVEAU --- #}
+                            </div>
+                        </td>
+                    {% endif %}
+                    {# --- FIN MODIFICATION : Cellule "Actions" --- #}
+                </tr>
+                {% empty %}
+                <tr>
+                    {# --- DÉBUT MODIFICATION : Colspan ajusté pour la colonne "Rôle" et "Actions" --- #}
+                    {# On a ajouté une colonne 'Rôle', donc le colspan doit être 10 si actions visibles, 9 sinon #}
+                    <td colspan="{% if request.user.is_professional %}11{% else %}10{% endif %}" class="text-center">
+                        Aucun utilisateur trouvé.
+                    </td>
+                    {# --- FIN MODIFICATION --- #}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

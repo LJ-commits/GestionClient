@@ -1,0 +1,73 @@
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+
+    body {
+        color: white; /* Couleur de police par défaut pour le fond de page */
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    main {
+        flex: 1;
+        background-image: url("../img/fond.jpg");
+        background-size: cover;
+        background-position: center;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+
+    /* Le conteneur principal de la "carte" */
+    .content-card {
+        background-color: white;
+        max-width: 800px;
+        margin: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden; /* Important pour que les coins arrondis fonctionnent avec le header */
+    }
+
+    /* Le bandeau bleu pour les titres */
+    .content-header {
+        background-color: #0d6efd; /* La couleur bleue de Bootstrap */
+        color: white;
+        padding: 1.5rem 2rem;
+    }
+
+    .content-header h1 {
+        margin: 0; /* Enlève la marge par défaut du h1 */
+        color: white; /* S'assure que le titre est blanc */
+    }
+
+    /* Le contenu du formulaire dans la carte */
+    .content-card form {
+        padding: 2rem; /* Espacement interne pour le formulaire */
+    }
+
+    /* S'assure que tout le texte à l'intérieur de la carte est noir */
+    .content-card,
+    .content-card label,
+    .content-card input,
+    .content-card textarea,
+    .content-card p {
+        color: black;
+    }
+
+    /* Ajout du style pour le footer */
+    footer {
+        margin-top: auto;
+    }
+
+    .content-wrapper {
+    background-color: transparent;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: auto;
+    border-radius: 8px;
+    box-shadow: none;
+}
+
+</style>

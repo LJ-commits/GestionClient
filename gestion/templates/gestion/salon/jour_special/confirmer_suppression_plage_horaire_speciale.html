@@ -1,0 +1,23 @@
+{# gestion/templates/gestion/salon/jour_special/confirmer_suppression_plage_horaire_speciale.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Confirmer Suppression Plage Horaire Spéciale{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Confirmer la suppression</h1>
+
+    <div class="alert alert-warning" role="alert">
+        Êtes-vous sûr de vouloir supprimer la plage horaire spéciale suivante pour le jour <strong>{{ jour_special.date|date:"d/m/Y" }}</strong> du salon <strong>{{ salon.nom }}</strong> ?
+        <br>
+        <strong>Heures :</strong> {{ objet.heure_debut|date:"H:i" }} - {{ objet.heure_fin|date:"H:i" }}
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">🗑️ Confirmer la suppression</button>
+        <a href="{% url 'liste_plages_horaires_speciales' salon_pk=salon.id jour_special_pk=jour_special.id %}" class="btn btn-secondary ms-2">⬅ Annuler</a>
+    </form>
+</div>
+{% endblock %}

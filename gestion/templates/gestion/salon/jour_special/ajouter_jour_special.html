@@ -1,0 +1,37 @@
+{# gestion/templates/gestion/salon/jour_special/ajouter_jour_special.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Ajouter Jour Spécial - {{ salon.nom }}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="content-header">
+        <h1>Ajouter un Jour Spécial pour : {{ salon.nom }}</h1>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="mb-3">
+            {{ form.date.label_tag }}
+            {{ form.date }}
+            {{ form.date.errors }}
+        </div>
+
+        <div class="form-check mb-3">
+            {# Le tag du champ input doit être le premier enfant du div.form-check #}
+            {{ form.est_ferme }}
+            {# Le label doit être associé à l'input via for="" et id="" #}
+            <label class="form-check-label" for="{{ form.est_ferme.id_for_label }}">
+                {{ form.est_ferme.label }}
+            </label>
+            {{ form.est_ferme.errors }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">💾 Enregistrer le Jour Spécial</button>
+        <a href="{% url 'liste_jours_speciaux' pk=salon.id %}" class="btn btn-secondary ms-2">⬅ Annuler</a>
+    </form>
+</div>
+{% endblock %}

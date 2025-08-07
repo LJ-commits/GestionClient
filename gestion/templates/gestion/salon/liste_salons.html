@@ -1,0 +1,64 @@
+{# gestion/templates/gestion/salon/liste_salons.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Liste des Salons - {{ nom_entreprise }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Liste des salons</h1>
+
+    {% if request.user.is_professional %}
+        <a href="{% url 'ajouter_salon' %}" class="btn btn-primary mb-3">
+            <i class="fas fa-plus-circle"></i> Créer un salon
+        </a>
+    {% endif %}
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nom</th>
+                    <th>Employés</th>
+                    <th>Jours</th>
+                    {% if request.user.is_professional %}
+                        <th>Actions</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for salon in salons %}
+                <tr>
+                    <td>{{ salon.nom }}</td>
+                    <td>{{ salon.nombre_employes }}</td>
+                    <td>
+                        {% if salon.get_jours_ouverture_from_plages %}
+                            {{ salon.get_jours_ouverture_from_plages|join:", " }}
+                        {% else %}
+                            Non défini
+                        {% endif %}
+                    </td>
+                    {% if request.user.is_professional %}
+                        <td>
+                            <a href="{% url 'detail_salon' pk=salon.id %}" class="btn btn-info btn-sm" title="Voir les détails">
+                                <i class="bi bi-eye"></i> Voir
+                            </a>
+                            <a href="{% url 'modifier_salon' pk=salon.id %}" class="btn btn-primary btn-sm ms-1" title="Modifier le salon">
+                                <i class="bi bi-pencil"></i> Modifier
+                            </a>
+                            <a href="{% url 'supprimer_salon' pk=salon.id %}" class="btn btn-danger btn-sm ms-1" title="Supprimer le salon">
+                                <i class="bi bi-trash"></i> Supprimer
+                            </a>
+                        </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="{% if request.user.is_professional %}4{% else %}3{% endif %}" class="text-center">Aucun salon trouvé.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
