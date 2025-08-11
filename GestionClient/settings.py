@@ -87,6 +87,7 @@ WSGI_APPLICATION = 'GestionClient.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+"""
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -97,6 +98,7 @@ DATABASES = {
         'PORT': '54322',
     }
 }
+"""
 
 """
 DATABASES = {
@@ -107,7 +109,6 @@ DATABASES = {
 }
 """
 
-"""
 
 DATABASES = {
     'default': dj_database_url.config(
@@ -116,7 +117,7 @@ DATABASES = {
         conn_health_checks=True,
     )
 }
-"""
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
