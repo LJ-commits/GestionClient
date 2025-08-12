@@ -176,18 +176,25 @@ def prendre_rendezvous_personnel(request, salon_id):
     if request.method == 'POST':
         form = RendezVousForm(request.POST, salon=salon, user=request.user, for_self_appointment=True)
         if form.is_valid():
-            # ... (code pour sauvegarder)
+            rendezvous = form.save(commit=False)
+
+            # --- CORRECTION ICI ---
+            rendezvous.heure_fin = form.cleaned_data['heure_fin']  # Récupère heure_fin calculée par le formulaire
+            # --- FIN DE LA CORRECTION ---
+
+            rendezvous.utilisateur = request.user
+            rendezvous.salon = salon
+            rendezvous.save()
+
             messages.success(request, "✅ Votre rendez-vous a été pris avec succès.")
             return redirect('mes_rendezvous')
         else:
-            # Votre code passe déjà le 'form' au template ici,
-            # donc la logique de la vue est correcte.
             messages.error(request, "Erreur lors de la prise de rendez-vous. Veuillez corriger les erreurs.")
     else:
         form = RendezVousForm(salon=salon, user=request.user, for_self_appointment=True)
 
     context = {
-        'form': form,  # <-- C'est cette ligne qui permet d'afficher les erreurs
+        'form': form,
         'salon': salon,
         'nom_entreprise': 'Saint Jolie',
         'title': f"Prendre Rendez-vous chez {salon.nom}",
