@@ -29,6 +29,9 @@ SECRET_KEY = 'django-insecure-9$=!n905+#4sl5r5w*oas&grp%i1c1p7iyz2b+btx$#nr4k5ab
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+
+ALLOWED_HOSTS = ['gestionclient.onrender.com', '.onrender.com']
+
 # Cookie settings - CRUCIAL for local HTTP development
 # Set to False for HTTP; set to True ONLY for HTTPS in production
 SESSION_COOKIE_SECURE = True
