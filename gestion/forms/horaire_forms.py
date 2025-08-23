@@ -1,3 +1,5 @@
+# gestion/forms/horaire_forms.py
+
 from datetime import date
 
 from django import forms
@@ -61,15 +63,20 @@ class PlageHoraireForm(forms.ModelForm):
                 if jour_debut_periode_weekday > jour_fin_periode_weekday:
                     # Dans ce cas, le jour du formulaire doit être >= jour de début OU <= jour de fin
                     if not (
-                            numero_jour_form >= jour_debut_periode_weekday or numero_jour_form <= jour_fin_periode_weekday):
+                            numero_jour_form >= jour_debut_periode_weekday or
+                            numero_jour_form <= jour_fin_periode_weekday):
                         raise ValidationError(
-                            "Le jour sélectionné n'est pas inclus dans la période d'activité du salon. Veuillez choisir un autre jour ou ajuster la période d'activité.")
+                            "Le jour sélectionné n'est pas inclus dans la période d'activité du salon. "
+                            "Veuillez choisir "
+                            "un autre jour ou ajuster la période d'activité.")
                 else:
                     # Cas normal : la période se déroule dans la même semaine
                     if not (
-                            numero_jour_form >= jour_debut_periode_weekday and numero_jour_form <= jour_fin_periode_weekday):
+                            jour_debut_periode_weekday <= numero_jour_form <= jour_fin_periode_weekday):
                         raise ValidationError(
-                            "Le jour sélectionné n'est pas inclus dans la période d'activité du salon. Veuillez choisir un autre jour ou ajuster la période d'activité.")
+                            "Le jour sélectionné n'est pas inclus dans la période d'activité du salon. "
+                            "Veuillez choisir "
+                            "un autre jour ou ajuster la période d'activité.")
 
         # --- FIN DE LA NOUVELLE LOGIQUE ---
 

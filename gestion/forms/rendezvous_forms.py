@@ -40,7 +40,6 @@ class RendezVousForm(forms.ModelForm):
 
         super().__init__(*args, **kwargs)
 
-        # --- DÉBUT DES MODIFICATIONS ---
         # GESTION DU CHAMP 'utilisateur'
         # La condition est modifiée pour que les professionnels et les élèves voient le même champ.
         if self.for_self_appointment:
@@ -65,7 +64,6 @@ class RendezVousForm(forms.ModelForm):
             self.fields['statut'].required = False
         else:
             self.fields['statut'].initial = 'prévu'
-        # --- FIN DES MODIFICATIONS ---
 
         # GESTION DU CHAMP 'soin_detail'
         if self.salon:
@@ -178,3 +176,18 @@ class RendezVousForm(forms.ModelForm):
                 "Désolé, tous les employés sont occupés à cette heure. Veuillez choisir un autre créneau.")
 
         return cleaned_data
+
+
+class ModifierStatutForm(forms.ModelForm):
+    """
+    Formulaire pour modifier le statut d'un rendez-vous, dans ancien rendez-vous.
+    """
+    class Meta:
+        model = RendezVous
+        fields = ['statut']
+        labels = {
+            'statut': 'Statut du rendez-vous',
+        }
+        widgets = {
+            'statut': forms.Select(attrs={'class': 'form-select'}),
+        }

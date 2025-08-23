@@ -77,7 +77,7 @@ def utilisateur_create(request):
     return render(request, 'gestion/utilisateur/utilisateur_form.html', context)
 
 
-@eleve_or_professionnel_required
+@professionnel_required
 def utilisateur_update(request, pk):
     utilisateur = get_object_or_404(Utilisateur, pk=pk)
     if request.method == 'POST':

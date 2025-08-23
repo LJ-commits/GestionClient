@@ -1,5 +1,3 @@
-{# gestion/templates/gestion/salon/anciens_rendezvous.html #}
-
 {% extends 'base.html' %}
 
 {% block title %}{{ title }}{% endblock %}
@@ -11,10 +9,6 @@
     </div>
 
     <div class="p-4">
-        <a href="{% url 'detail_salon' pk=salon.id %}" class="btn btn-secondary mb-4">
-            <i class="bi bi-arrow-left-circle-fill"></i> Retour à la page du salon
-        </a>
-
         {% if rendezvous_par_mois %}
             <div class="accordion" id="anciensRendezvousAccordion">
                 {% for mois, rendez_vous_list in rendezvous_par_mois.items %}
@@ -29,10 +23,31 @@
                                 <ul class="list-group list-group-flush">
                                     {% for rd in rendez_vous_list %}
                                         <li class="list-group-item">
-                                            Rendez-vous de <strong>{{ rd.utilisateur.first_name }} {{ rd.utilisateur.last_name }}</strong> pour
-                                            {{ rd.soin_detail.soin.type_de_soin }} le {{ rd.date|date:"d/m/Y" }} de
-                                            {{ rd.heure_debut|date:"H:i" }} à {{ rd.heure_fin|time:"H:i" }}
-                                            {# Les boutons de modification/suppression ne sont généralement pas nécessaires pour les anciens rendez-vous #}
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <div>
+                                                    Rendez-vous de <strong>{{ rd.utilisateur.first_name }} {{ rd.utilisateur.last_name }}</strong> pour
+                                                    {{ rd.soin_detail.soin.type_de_soin }} le {{ rd.date|date:"d/m/Y" }} de
+                                                    {{ rd.heure_debut|date:"H:i" }} à {{ rd.heure_fin|time:"H:i" }}
+                                                    <br>
+                                                    Statut actuel :
+                                                        <span class="badge
+                                                            {% if rd.statut == 'prévu' %}bg-primary
+                                                            {% elif rd.statut == 'confirmé' %}bg-success
+                                                            {% elif rd.statut == 'annulé' %}bg-danger
+                                                            {% elif rd.statut == 'terminé' %}bg-secondary
+                                                            {% else %}bg-info{% endif %}">
+                                                            {{ rd.get_statut_display }}
+                                                            </span>
+                                                </div>
+
+                                                {# --- NOUVELLE LOGIQUE : Bouton pour le professionnel --- #}
+                                                {% if request.user.is_authenticated and request.user.is_professional %}
+                                                    <a href="{% url 'modifier_statut_rendezvous' pk=rd.pk %}" class="btn btn-warning btn-sm align-self-center">
+                                                        Modifier le statut
+                                                    </a>
+                                                {% endif %}
+                                                {# --- FIN DE LA LOGIQUE --- #}
+                                            </div>
                                         </li>
                                     {% endfor %}
                                 </ul>
@@ -46,6 +61,16 @@
                 Aucun ancien rendez-vous n'a été trouvé pour ce salon.
             </div>
         {% endif %}
+
+
     </div>
 </div>
+
+<!-- Bouton sous la box -->
+<div class="text-start" style="max-width: 800px; margin: 0 auto; margin-top: 20px;">
+    <a href="{% url 'detail_salon' pk=salon.id %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left-circle-fill"></i> Retour
+    </a>
+</div>
+
 {% endblock %}

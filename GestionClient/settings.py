@@ -28,17 +28,36 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-9$=!n905+#4sl5r5w*oas&grp%i1c1p7iyz2b+btx$#nr4k5ab'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 # Cookie settings - CRUCIAL for local HTTP development
 # Set to False for HTTP; set to True ONLY for HTTPS in production
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
-# ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
-ALLOWED_HOSTS = ['gestionclient.onrender.com']
+
+# Configuration des hôtes autorisés
+# Si la variable d'environnement RENDER est définie (en production)
+# Configuration de la base de données
+# Si la variable d'environnement DATABASE_URL est définie (comme sur Render)
+if os.environ.get('DATABASE_URL'):
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+else:
+    # Sinon, on utilise la base de données SQLite3 pour le développement local
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
 
 # Application definition
-
 INSTALLED_APPS = [
     # J'ai déplacé 'gestion' en premier pour une meilleure gestion des traductions
     'gestion',  # mon app
@@ -55,8 +74,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # IMPORTANT: Ajouté LocaleMiddleware ici, après SessionMiddleware et CommonMiddleware
-    'django.middleware.locale.LocaleMiddleware',  # <--- AJOUT OU DÉPLACEMENT
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -109,7 +127,8 @@ DATABASES = {
 }
 """
 
-
+"""
+ici ancien configuration pour la production ^^
 DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get('DATABASE_URL'),
@@ -117,7 +136,7 @@ DATABASES = {
         conn_health_checks=True,
     )
 }
-
+"""
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

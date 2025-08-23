@@ -1,12 +1,15 @@
 # GestionClient/gestion/views/rendezvous.py
 
+from datetime import datetime
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
+from django.utils import timezone
+from django.urls import reverse
 
 from gestion.models import RendezVous, Salon, Soin, Utilisateur, SoinSalonDetail
-from gestion.forms.rendezvous_forms import RendezVousForm
+from gestion.forms.rendezvous_forms import RendezVousForm, ModifierStatutForm
 from gestion.decorateurs import professionnel_required, eleve_or_professionnel_required
 
 
@@ -126,12 +129,31 @@ def supprimer_rendezvous(request, rendezvous_id):
 
 @login_required
 def mes_rendezvous_view(request):
-    rendezvous_list = RendezVous.objects.filter(utilisateur=request.user).order_by('date', 'heure_debut')
+    # Récupère tous les rendez-vous de l'utilisateur connecté, triés par date et heure
+    rendezvous_all = RendezVous.objects.filter(utilisateur=request.user).order_by('date', 'heure_debut')
+
+    # Obtient la date et l'heure actuelles
+    maintenant = datetime.now()
+
+    # Crée des listes pour les rendez-vous futurs et passés
+    rendezvous_futurs = []
+    rendezvous_passes = []
+
+    # Parcourt les rendez-vous et les trie en fonction de la date et de l'heure de fin
+    for rv in rendezvous_all:
+        rendezvous_fin = datetime.combine(rv.date, rv.heure_fin)
+        if rendezvous_fin > maintenant:
+            rendezvous_futurs.append(rv)
+        else:
+            rendezvous_passes.append(rv)
+
+    # Le dictionnaire de contexte contient maintenant les deux listes
     context = {
         'nom_entreprise': 'Saint Jolie',
-        'rendezvous_list': rendezvous_list,
         'is_my_appointments_view': True,
         'title': 'Mes rendez-vous',
+        'rendezvous_futurs': rendezvous_futurs,
+        'rendezvous_passes': rendezvous_passes,
     }
     return render(request, 'gestion/rendezvous/rendezvous.html', context)
 
@@ -200,3 +222,36 @@ def prendre_rendezvous_personnel(request, salon_id):
         'title': f"Prendre Rendez-vous chez {salon.nom}",
     }
     return render(request, 'gestion/rendezvous/prendre_rendezvous_personnel.html', context)
+
+
+# La nouvelle vue pour la modification du statut
+@professionnel_required
+def modifier_statut_rendezvous(request, pk):
+    rendezvous = get_object_or_404(RendezVous, pk=pk)
+
+    # Vérifie si l'utilisateur est un professionnel ou un élève
+    if not (request.user.is_professional or request.user.is_eleve):
+        messages.error(request, "Vous n'avez pas la permission d'effectuer cette action.")
+        return redirect('anciens_rendezvous', salon_id=rendezvous.salon.id)
+
+    # Empêche la modification de rendez-vous futurs
+    if rendezvous.date > timezone.now().date():
+        messages.error(request, "Vous ne pouvez pas modifier le statut d'un rendez-vous à venir depuis cette page.")
+        return redirect('anciens_rendezvous', salon_id=rendezvous.salon.id)
+
+    if request.method == 'POST':
+        form = ModifierStatutForm(request.POST, instance=rendezvous)
+        if form.is_valid():
+            form.save()
+            messages.success(request,
+                             f"Le statut du rendez-vous a été mis à jour sur '{rendezvous.get_statut_display()}'.")
+            return redirect('anciens_rendezvous', pk=rendezvous.salon.id)
+    else:
+        form = ModifierStatutForm(instance=rendezvous)
+
+    context = {
+        'form': form,
+        'rendezvous': rendezvous,
+        'title': f"Modifier le statut du rendez-vous de {rendezvous.utilisateur.first_name}"
+    }
+    return render(request, 'gestion/rendezvous/modifier_statut_rendezvous.html', context)

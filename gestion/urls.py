@@ -87,6 +87,8 @@ urlpatterns = [
     path('salon/<int:salon_id>/rendezvous/ajouter/', rendezvous.ajouter_rendezvous, name='ajouter_rendezvous'),
     path('rendezvous/<int:rendezvous_id>/modifier/', rendezvous.modifier_rendezvous, name='modifier_rendezvous'),
     path('rendezvous/<int:rendezvous_id>/supprimer/', rendezvous.supprimer_rendezvous, name='supprimer_rendezvous'),
+    path('rendezvous/<int:pk>/modifier-statut/', rendezvous.modifier_statut_rendezvous,
+         name='modifier_statut_rendezvous'),
 
     # --- NOUVELLES ROUTES RENDEZ-VOUS PERSONNEL ---
     path('rendezvous/prendre/choisir-salon/', rendezvous.choisir_salon_pour_rendezvous,

@@ -1,5 +1,3 @@
-{# gestion/templates/gestion/salon/detail_salon.html #}
-
 {% extends 'base.html' %}
 
 {% block title %}Détails du Salon : {{ salon.nom }} - {{ nom_entreprise }}{% endblock %}
@@ -163,6 +161,16 @@
                                                         Rendez-vous de <strong>{{ rd.utilisateur.first_name }} {{ rd.utilisateur.last_name }}</strong>
                                                          pour {{ rd.soin_detail.soin.type_de_soin }} le {{ rd.date|date:"d/m/Y" }} de
                                                         {{ rd.heure_debut|time:"H:i" }} à {{ rd.heure_fin|time:"H:i" }}
+                                                        <br>
+                                                        Statut :
+                                                        <span class="badge
+                                                            {% if rd.statut == 'prévu' %}bg-info
+                                                            {% elif rd.statut == 'confirmé' %}bg-success
+                                                            {% elif rd.statut == 'annulé' %}bg-danger
+                                                            {% elif rd.statut == 'terminé' %}bg-secondary
+                                                            {% else %}bg-secondary{% endif %}">
+                                                            {{ rd.get_statut_display }}
+                                                        </span>
                                                     </div>
                                                     <div>
                                                         {% if request.user.is_professional %}

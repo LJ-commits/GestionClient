@@ -3,6 +3,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.views.decorators.cache import cache_control
 
 from gestion.models import Utilisateur
 from gestion.forms.utilisateur_forms import UtilisateurCreationForm, UtilisateurPublicRegistrationForm
@@ -42,6 +43,16 @@ def login_view(request):
     return render(request, 'gestion/login.html', context)
 
 
+"""
+Ce décorateur envoie des en-têtes HTTP spécifiques au navigateur, lui demandant de :
+no_cache : Ne pas enregistrer cette page dans son cache.
+no_store : Ne pas la stocker dans l'historique de session ou sur le disque.
+must_revalidate : Vérifier auprès du serveur à chaque fois qu'il tente de la charger.
+
+"""
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def logout_view(request):
     logout(request)
     messages.info(request, "Vous avez été déconnecté. À bientôt ! 👋")
