@@ -7,6 +7,6 @@ from gestion.views import main_views  # Si tu as une main_views pour tes pages p
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', lambda request: redirect('home/')),  # Redirige la racine vers /home/
+    path('', lambda request: redirect('accueil/')),  # Redirige la racine vers /home/
     path('', include('gestion.urls')),  # Inclut les URLs de ton application 'gestion'
 ]
