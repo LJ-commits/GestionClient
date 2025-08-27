@@ -1,14 +1,19 @@
 {% extends 'base.html' %}
-{% load static %}  {# <== Obligatoire pour utiliser {% static %} #}
+{% load static %}
 
-{% block title %}À propos - {{ nom_entreprise }}{% endblock %}
+{% block title %} À propos de {{ nom_entreprise }} {% endblock %}
 
 {% block content %}
+{# Charge le CSS spécifique à cette page à l'intérieur du bloc content #}
+<link rel="stylesheet" href="{% static 'css/apropos.css' %}">
+
 <div class="container mt-5">
-    <h1 class="mb-4">À propos de {{ nom_entreprise }}</h1>
+    <h1 class="mb-4"> À propos de {{ nom_entreprise }}</h1>
     <div class="row">
         <div class="col-md-6">
-            <p>{{ description|safe }}</p>
+            <div class="text-container">
+                <p>{{ description|safe }}</p>
+            </div>
         </div>
         <div class="col-md-6">
             <img src="{% static photo %}" class="img-fluid rounded shadow" alt="Photo de l'entreprise">

@@ -1,0 +1,26 @@
+/* --- Styles pour la page d'accueil (Accueil) --- */
+
+/* Style pour le titre H1 de la page d'accueil */
+.container h1 {
+    color: #ffffff; /* S'assure que le titre principal est blanc */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Ajoute une ombre pour une meilleure lisibilité */
+    text-align: center; /* Centre le titre */
+    margin-bottom: 20px; /* Ajoute un peu d'espace en dessous */
+}
+
+/* Nouveau style pour la boîte de description */
+.description-box {
+    background-color: rgba(0, 0, 0, 0.6); /* Fond noir semi-transparent (60% opacité) */
+    padding: 15px 30px; /* Espacement intérieur */
+    border-radius: 8px; /* Bords arrondis */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ombre légère */
+    /* Le 'color: #ffffff;' sera appliqué par le paragraphe lui-même */
+    margin-bottom: 30px; /* Espace entre la description et l'image */
+}
+
+/* S'assurer que le texte du paragraphe à l'intérieur de la description-box est blanc */
+.description-box p {
+    color: #ffffff;
+    line-height: 1.6;
+    margin: 0; /* Supprime la marge par défaut du paragraphe pour mieux contrôler le padding de la box */
+}

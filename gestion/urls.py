@@ -10,7 +10,7 @@ from gestion.views import utilisateur_views  # Importe utilisateur_views
 
 urlpatterns = [
     # Vues générales (main_views.py)
-    path('home/', main_views.home, name='home'),
+    path('accueil/', main_views.home, name='home'),
     path('login/', main_views.login_view, name='login'),
     path('logout/', main_views.logout_view, name='logout'),
     path('creer-compte/', main_views.register_view, name='register'),

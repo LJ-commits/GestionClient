@@ -38,14 +38,14 @@
                 <div class="card-footer d-flex justify-content-between align-items-center">
                     {# Bouton "Voir les détails" du salon : Visible pour TOUS (pas de condition de rôle) #}
                     <a href="{% url 'detail_salon' pk=salon.pk %}" class="btn btn-sm btn-info">
-                        <i class="fas fa-eye"></i> Voir salon
+                        <i class="fas fa-eye"></i> Voir le salon
                     </a>
 
                     {# Bouton "Soins salon" (Gérer/Voir) : Visible pour TOUS, le texte et le style changent selon le rôle #}
                     {# L'URL doit toujours pointer vers la vue qui affiche les SoinSalonDetail pour ce salon #}
                     <a href="{% url 'soin_salon_detail_list' salon_pk=salon.pk %}" class="btn btn-sm btn-warning ms-1">
                         <i class="fas fa-spa"></i>
-                        {% if request.user.is_professional %}Gérer les soins du salon{% else %}Soins du salon{% endif %}
+                        {% if request.user.is_professional %}Gérer les soins{% else %}Soins du salon{% endif %}
                     </a>
 
                     {# Boutons "Modifier" et "Supprimer" le salon : visibles UNIQUEMENT pour les professionnels #}

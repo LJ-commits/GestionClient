@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" type="image/x-icon" href="{% static 'img/lotus.ico' %}">
 
+    {# permet d'insérer le CSS de chaque page. #}
+    {% block extra_head %}{% endblock %}
 
 
 </head>

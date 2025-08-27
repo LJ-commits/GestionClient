@@ -130,11 +130,17 @@ def ajouter_salon(request):
     if request.method == 'POST':
         form = SalonForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, "✅ Salon ajouté avec succès.")
-            return redirect('liste_salons')
+            nom_salon = form.cleaned_data['nom']
+            # Vérifie si un salon avec ce nom (insensible à la casse) existe déjà
+            if Salon.objects.filter(nom__iexact=nom_salon).exists():
+                messages.error(request, "⚠️ Un salon avec ce nom existe déjà. Veuillez en choisir un autre.")
+            else:
+                form.save()
+                messages.success(request, "✅ Salon ajouté avec succès.")
+                return redirect('liste_salons')
     else:
         form = SalonForm()
+
     context = {
         'form': form,
         'nom_entreprise': 'Saint Jolie',

@@ -61,7 +61,7 @@ def logout_view(request):
 
 def apropos(request):
     context = {
-        'nom_entreprise': "À propos de Saint Jolie",
+        'nom_entreprise': "Saint Jolie",
         'description': "Nous sommes spécialisés dans les soins esthétiques de qualité. <br> "
                        " Notre mission est de prendre soin de vous. <br>"
                        " Deux espaces de soins <br>"

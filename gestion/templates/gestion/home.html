@@ -4,9 +4,18 @@
 {% block title %}Accueil - {{ nom_entreprise }}{% endblock %}
 
 {% block content %}
+{# Charge le fichier CSS spécifique à la page d'accueil #}
+<link rel="stylesheet" href="{% static 'css/accueil.css' %}">
+
 <div class="container d-flex flex-column align-items-center justify-content-center text-center mt-5">
+    {# Le titre H1 reste en dehors de la boîte, mais bénéficie des styles H1 du CSS #}
     <h1 class="mb-3">Bienvenue chez {{ nom_entreprise }}</h1>
-    <p class="lead mb-4">{{ description }}</p>
+
+    {# Seul le paragraphe de description est enveloppé dans la nouvelle div avec la classe description-box #}
+    <div class="description-box">
+        <p class="lead mb-0">{{ description }}</p> {# Retiré mb-4 car la marge est gérée par la box #}
+    </div>
+
     <img src="{% static 'img/StJolie.jpg' %}" class="img-fluid rounded" alt="Photo de l'entreprise">
 </div>
 {% endblock %}
