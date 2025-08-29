@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n %} {# Important pour les traductions #}
+{% load i18n %} {# Important pour les traductions mais pas user pour le moment peu être pour un futur cite multilingue #}
 
 {% block title %}{{ title }} - {{ nom_entreprise }}{% endblock %}
 
@@ -27,7 +27,7 @@
                         {# Itérer sur tous les champs du formulaire #}
                         {% for field in form %}
                             {# Gérer spécifiquement les champs de mot de passe (password et password2 pour UserCreationForm) #}
-                            {# car nous allons les afficher séparément et conditionnellement ci-dessous. #}
+                            {# car je les afficher séparément et conditionnellement ci-dessous. #}
                             {% if field.name != 'password' and field.name != 'password2' %}
                                 <div class="mb-3">
                                     <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>

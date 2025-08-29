@@ -6,6 +6,9 @@ from django.contrib.auth import get_user_model
 from django.db.models.functions import Lower
 from django.contrib.auth.forms import SetPasswordForm
 
+from django.db.models import Q
+from django.db.models.functions import Lower
+
 # Importe vos modèles et formulaires spécifiques
 from gestion.models import Utilisateur
 from gestion.forms.utilisateur_forms import UtilisateurCreationForm, UtilisateurChangeForm
@@ -28,26 +31,37 @@ User = get_user_model()
 @eleve_or_professionnel_required
 def utilisateur_list(request):
     show_inactive = request.GET.get('inactive', 'false').lower() == 'true'
+    query = request.GET.get('q')  # Récupère le terme de recherche
 
+    # Commencez avec la liste de tous les utilisateurs (sauf les superutilisateurs)
+    utilisateurs = Utilisateur.objects.all().exclude(is_superuser=True)
+
+    # Appliquez le filtre de recherche si une requête est présente
+    if query:
+        utilisateurs = utilisateurs.filter(
+            Q(last_name__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(username__icontains=query) |
+            Q(email__icontains=query)
+        )
+
+    # Appliquez le filtre actif/inactif
     if show_inactive:
-        # Exclure les superutilisateurs de la liste des inactifs
-        utilisateurs = Utilisateur.objects.filter(is_active=False).exclude(is_superuser=True).order_by(
-            Lower('last_name'), Lower('first_name'))
+        utilisateurs = utilisateurs.filter(is_active=False)
     else:
-        # Exclure les superutilisateurs de la liste des actifs
-        utilisateurs = Utilisateur.objects.filter(is_active=True).exclude(is_superuser=True).order_by(
-            Lower('last_name'), Lower('first_name'))
+        utilisateurs = utilisateurs.filter(is_active=True)
+
+    # Triez les résultats
+    utilisateurs = utilisateurs.order_by(Lower('last_name'), Lower('first_name'))
 
     context = {
         'nom_entreprise': "Saint Jolie",
         'utilisateurs': utilisateurs,
         'show_inactive': show_inactive,
         'title': "Liste des Utilisateurs",
+        'query': query,  # <-- pour que la boxe (la variable query) recherche se souvient ce que l'utilisateur à écrit
     }
     return render(request, 'gestion/utilisateur/utilisateurs.html', context)
-
-
-# --- FIN MODIFICATION : DÉCORATEUR POUR utilisateur_list ---
 
 
 # Les vues suivantes restent sous @professionnel_required car elles modifient des données

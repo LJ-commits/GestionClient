@@ -32,7 +32,6 @@
                     <p class="card-text"><strong>Adresse :</strong> {{ salon.adresse }}</p>
                     <p class="card-text"><strong>Téléphone :</strong> {{ salon.telephone }}</p>
                     <p class="card-text"><strong>Email :</strong> {{ salon.email }}</p>
-                    {# Assurez-vous que .count est correct ou utilisez .all|length pour les relations ManyToMany #}
                     <p class="card-text"><strong>Employés :</strong> {{ salon.employes.count }}</p>
                 </div>
                 <div class="card-footer d-flex justify-content-between align-items-center">
